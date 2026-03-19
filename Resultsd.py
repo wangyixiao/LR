@@ -1,0 +1,67 @@
+import math
+
+import numpy as np
+import os
+
+
+all_acc = []
+all_pre = []
+all_rec = []
+all_f1 = []
+all_kap = []
+
+datalist=[]
+
+for bbb in range(1, 23):
+
+    a_acc = []
+    a_pre = []
+    a_rec = []
+    a_f1 = []
+    a_kap = []
+    for tr in range(1, 16):
+        path = os.path.join(' ', str(bbb), str(tr))
+        val_acc = open(path + '/test_acc.txt', "r")
+        string = val_acc.readlines()[-1]  # readlines() 方法用于读取所有行(直到结束符 EOF)并返回列表 [-1]表示最后一行
+
+        acc = string.split('acc=')[1].split(', pre')[0]
+        pre = string.split('pre=')[1].split(', rec')[0]
+        rec = string.split('rec=')[1].split(', f1')[0]
+        f1 = string.split('f1=')[1].split(', kap')[0]
+        kappa = string.split('kap=')[1]
+
+        acc = float(acc)
+        pre = float(pre)
+        rec = float(rec)
+        f1 = float(f1) * 100
+        kappa = float(kappa)
+
+        if(math.isnan(kappa)):
+            print(bbb,tr)
+
+        a_acc.append(acc)
+        a_pre.append(pre)
+        a_rec.append(rec)
+        a_f1.append(f1)
+        a_kap.append(kappa)
+
+    datalist.append((bbb,np.mean(a_acc),np.mean(a_pre),np.mean(a_rec),np.mean(a_f1),np.mean(a_kap)))
+    all_acc.append(np.mean(a_acc))
+    all_pre.append(np.mean(a_pre))
+    all_rec.append(np.mean(a_rec))
+    all_f1.append(np.mean(a_f1))
+    all_kap.append(np.mean(a_kap))
+
+sorted_data = sorted(datalist, key=lambda x: x[1])
+for data in sorted_data:
+    print(data[0], data[1], data[2], data[3], data[4], data[5])
+sub_acc = np.array(all_acc)
+sub_pre = np.array(all_pre)
+sub_rec = np.array(all_rec)
+sub_f1 = np.array(all_f1)
+sub_kap = np.array(all_kap)
+print('acc = %.2f ± %.2f' % (np.mean(all_acc), np.std(all_acc)))
+print('pre = %.2f ± %.2f' % (np.mean(all_pre), np.std(all_pre)))
+print('rec = %.2f ± %.2f' % (np.mean(all_rec), np.std(all_rec)))
+print('f1 = %.2f ± %.2f' % (np.mean(all_f1), np.std(all_f1)))
+print('kap = %.2f ± %.2f' % (np.mean(all_kap), np.std(all_kap)))
